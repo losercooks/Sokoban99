@@ -1,11 +1,11 @@
-import { Player } from './entities/player.js';
-import { Wall } from './entities/wall.js';
-import { Floor } from './entities/floor.js';
-import { Box } from './entities/box.js';
-import { Target } from './entities/target.js';
-import { Decoration } from './entities/decoration.js'; // Import Decoration
-import { resources } from './resources.js';
-import DataBus from './databus.js';
+import { Player } from '../entities/player.js';
+import { Wall } from '../entities/wall.js';
+import { Floor } from '../entities/floor.js';
+import { Box } from '../entities/box.js';
+import { Target } from '../entities/target.js';
+import { Decoration } from '../entities/decoration.js'; // Import Decoration
+import { resources } from '../resources.js';
+import DataBus from '../managers/databus.js';
 
 const databus = new DataBus();
 
@@ -101,7 +101,7 @@ export class GameScene {
     }
 
     async loadLevel(level) {
-        const levelData = require(`../levels/${level}.json`);
+        const levelData = require(`../../levels/${level}.json`);
         this.level = levelData;
 
         this.entities = [];
@@ -135,7 +135,7 @@ export class GameScene {
         }
 
         if (this.checkWinCondition()) {
-            databus.gameOver = true;
+            databus.emit('win');
         }
     }
 

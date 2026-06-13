@@ -1,6 +1,6 @@
-import { GameScene } from './game_scene.js';
+import { GameScene } from './scenes/game_scene.js';
 import { resources } from './resources.js';
-import DataBus from './databus.js';
+import DataBus from './managers/databus.js';
 
 const canvas = wx.createCanvas();
 const ctx = canvas.getContext('2d');
@@ -8,10 +8,24 @@ const ctx = canvas.getContext('2d');
 const databus = new DataBus();
 const loadedImages = {};
 const gameScene = new GameScene(loadedImages);
+let animationFrameId = null;
 
 async function main() {
     await loadResources();
     await gameScene.loadLevel('level1');
+
+    databus.on('gameOver', () => {
+        if (animationFrameId) {
+            cancelAnimationFrame(animationFrameId);
+            animationFrameId = null;
+        }
+
+        ctx.font = "16px Arial";
+        ctx.fillStyle = "green";
+        ctx.textAlign = "center";
+        ctx.fillText("You Win!", canvas.width / 2, canvas.height / 2);
+    });
+
     gameLoop();
 }
 
@@ -35,15 +49,7 @@ function gameLoop() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     gameScene.update(1 / 60);
     gameScene.draw(ctx);
-
-    if (databus.gameOver) {
-        ctx.font = "16px Arial";
-        ctx.fillStyle = "green";
-        ctx.textAlign = "center";
-        ctx.fillText("You Win!", canvas.width / 2, canvas.height / 2);
-    } else {
-        requestAnimationFrame(gameLoop);
-    }
+    animationFrameId = requestAnimationFrame(gameLoop);
 }
 
 main();
